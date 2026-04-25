@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AN1 | Leviathan Command & Fiscal Terminal</title>
+    <title>AN1 | Leviathan Strategic Command</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;700&display=swap');
@@ -14,9 +14,10 @@
             --an-panel: rgba(15, 23, 42, 0.7);
         }
 
-        body { background: var(--an-dark); color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        body { background: var(--an-dark); color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
         .mono { font-family: 'JetBrains Mono', monospace; }
         
+        /* CRT HUD OVERLAY */
         .hud-overlay {
             position: fixed; inset: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
@@ -25,23 +26,23 @@
         }
 
         .horizon-title { font-size: clamp(4rem, 14vw, 12rem); line-height: 0.8; font-weight: 900; letter-spacing: -0.05em; text-transform: uppercase; }
+        .glass-panel { background: var(--an-panel); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 40px; }
 
-        .glass-panel {
-            background: var(--an-panel); backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 40px;
-        }
-
+        /* FISCAL INPUTS */
         .white-field {
             background: white !important; color: black !important; font-weight: 900;
             border-radius: 24px; padding: 1.5rem; border: none; outline: none; width: 100%;
         }
 
-        /* PAYMENT STEPPER ANIMATION */
+        /* RANK PROGRESS BAR */
+        .rank-glow { box-shadow: 0 0 30px rgba(37, 99, 235, 0.3); border-color: var(--an-blue); }
+        
+        /* PAYMENT ANIMATION */
         @keyframes flow { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-        .progress-line { position: relative; overflow: hidden; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; }
+        .progress-line { position: relative; overflow: hidden; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; }
         .progress-active::after {
             content: ''; position: absolute; top: 0; left: 0; width: 50%; height: 100%;
-            background: var(--an-blue); animation: flow 2s infinite linear;
+            background: var(--an-blue); animation: flow 1.5s infinite linear;
         }
     </style>
 </head>
@@ -49,147 +50,176 @@
 
     <div class="hud-overlay"></div>
 
-    <nav class="fixed top-0 w-full z-[100] p-10 flex justify-between items-start">
-        <div class="flex items-center gap-6">
+    <nav class="fixed top-0 w-full z-[100] p-10 flex justify-between items-start pointer-events-none">
+        <div class="pointer-events-auto flex items-center gap-6">
             <div class="w-16 h-16 bg-blue-600 rounded-[22px] flex items-center justify-center font-black text-3xl shadow-2xl">AN</div>
             <div>
-                <h1 class="text-2xl font-black uppercase tracking-tighter">Air Nomads 1</h1>
-                <p class="mono text-[9px] text-blue-500 font-bold tracking-[0.5em] uppercase mt-2">Fiscal & Deployment Hub</p>
+                <h1 class="text-2xl font-black uppercase tracking-tighter leading-none">Air Nomads 1</h1>
+                <p class="mono text-[9px] text-blue-500 font-bold tracking-[0.5em] uppercase mt-2">Aero-Intelligence Strategic Hub</p>
             </div>
+        </div>
+        
+        <div class="pointer-events-auto flex gap-10 pt-4">
+            <div class="hidden xl:flex flex-col items-end mono text-[10px] tracking-widest text-slate-500">
+                <span>SYSTEM STATUS</span>
+                <span class="text-green-500">ENCRYPTED // ACTIVE</span>
+            </div>
+            <button class="bg-white/5 border border-white/10 px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">Secure Login</button>
         </div>
     </nav>
 
-    <main class="min-h-screen flex flex-col items-center pt-52 pb-20 px-6 relative">
+    <main class="min-h-screen flex flex-col items-center pt-52 pb-40 px-6 relative">
         
-        <div id="hero-core" class="text-center mb-40">
+        <div class="text-center mb-48">
             <h2 class="horizon-title">Master<br>The<br><span class="text-blue-600">Horizon.</span></h2>
-            <p class="mono text-[10px] text-slate-500 tracking-[0.8em] uppercase mt-8">Enterprise Grade Aero-Intelligence</p>
+            <p class="mono text-[11px] text-slate-400 tracking-[1em] uppercase mt-12 animate-pulse">Enterprise UAV Solutions</p>
+            <button onclick="triggerMission()" class="mt-16 bg-blue-600 px-20 py-8 rounded-full font-black text-xs uppercase tracking-[0.6em] hover:scale-105 transition-all shadow-[0_20px_60px_rgba(37,99,235,0.4)]">Initialize Sortie</button>
         </div>
 
-        <section class="w-full max-w-7xl grid lg:grid-cols-5 gap-10">
+        <section class="w-full max-w-7xl mb-40">
+            <div class="flex items-center gap-6 mb-16">
+                <h3 class="text-5xl font-black italic uppercase tracking-tighter">Command & Contractors</h3>
+                <div class="h-[2px] flex-grow bg-white/5"></div>
+            </div>
             
-            <div class="lg:col-span-3 space-y-8">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="glass-panel p-10 relative overflow-hidden group">
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-600/10 blur-3xl group-hover:bg-blue-600/20 transition-all"></div>
+                    <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-3xl mb-8">👑</div>
+                    <h4 class="text-2xl font-black uppercase tracking-tight">Chief Executive</h4>
+                    <p class="mono text-[10px] text-blue-500 font-bold uppercase mt-2">Leviathan Lead</p>
+                    <p class="text-slate-400 text-[13px] mt-6 leading-relaxed">Overseeing 11ft Leviathan drone firmware and Boreka Group tree-funding initiatives.</p>
+                </div>
+
+                <div class="glass-panel p-10 relative overflow-hidden group">
+                    <div class="w-16 h-16 bg-amber-400/20 text-amber-500 rounded-2xl flex items-center justify-center text-3xl mb-8">🤠</div>
+                    <h4 class="text-2xl font-black uppercase tracking-tight">StudyOutlaws</h4>
+                    <p class="mono text-[10px] text-amber-500 font-bold uppercase mt-2">Technical Contractor</p>
+                    <p class="text-slate-400 text-[13px] mt-6 leading-relaxed">Providing high-volume data diagnostic support and educational portal infrastructure.</p>
+                </div>
+
+                <div class="glass-panel p-10 relative overflow-hidden group">
+                    <div class="w-16 h-16 bg-green-500/20 text-green-500 rounded-2xl flex items-center justify-center text-3xl mb-8">🌳</div>
+                    <h4 class="text-2xl font-black uppercase tracking-tight">Boreka Group</h4>
+                    <p class="mono text-[10px] text-green-500 font-bold uppercase mt-2">Operational Partner</p>
+                    <p class="text-slate-400 text-[13px] mt-6 leading-relaxed">Environmental mapping and reforestation funding project management.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="w-full max-w-7xl grid lg:grid-cols-5 gap-12 text-left">
+            
+            <div class="lg:col-span-3 space-y-10">
                 <div class="flex items-center gap-4">
-                    <h3 class="text-4xl font-black italic uppercase tracking-tighter">Mission Builder</h3>
+                    <h3 class="text-4xl font-black italic uppercase tracking-tighter">Secure Contract</h3>
                     <div class="h-[1px] flex-grow bg-white/10"></div>
                 </div>
 
-                <div class="glass-panel p-10 space-y-10">
-                    <div class="grid md:grid-cols-2 gap-8">
+                <div class="glass-panel p-12 space-y-12">
+                    <div class="grid md:grid-cols-2 gap-10">
                         <div class="space-y-4">
-                            <label class="mono text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Flight Duration (Hours)</label>
-                            <input type="number" id="input-hours" value="1" min="1" oninput="calculateTotal()" class="white-field text-2xl">
-                        </div>
-                        <div class="space-y-4">
-                            <label class="mono text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Operation Type</label>
-                            <select id="input-type" onchange="calculateTotal()" class="white-field appearance-none cursor-pointer">
-                                <option value="30">Agri-Mapping ($30/hr)</option>
-                                <option value="50">Wedding Cinema ($50/hr)</option>
+                            <label class="mono text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Operation Mode</label>
+                            <select id="op-type" onchange="updateFiscal()" class="white-field appearance-none cursor-pointer">
+                                <option value="30">Agricultural Mapping ($30/hr)</option>
+                                <option value="50">Wedding Cinematic ($50/hr)</option>
                                 <option value="0">StudyOutlaws Demo ($0/hr)</option>
                             </select>
+                        </div>
+                        <div class="space-y-4">
+                            <label class="mono text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Mission Hours</label>
+                            <input type="number" id="op-hours" value="1" min="1" oninput="updateFiscal()" class="white-field text-2xl">
                         </div>
                     </div>
 
                     <div class="grid md:grid-cols-2 gap-6">
-                        <div onclick="toggleAddon('ceo')" id="addon-ceo" class="p-6 border-2 border-white/5 rounded-3xl flex justify-between items-center cursor-pointer transition-all hover:bg-white/5">
-                            <div>
-                                <p class="font-black uppercase text-sm">CEO Attendance</p>
-                                <p class="mono text-[9px] text-slate-500">+$30/HR</p>
-                            </div>
-                            <div id="check-ceo" class="w-6 h-6 rounded-full border-2 border-white/20"></div>
+                        <div onclick="toggleAddon('ceo')" id="addon-ceo" class="p-8 border-2 border-white/5 rounded-3xl flex justify-between items-center cursor-pointer hover:bg-white/5 transition-all">
+                            <div><p class="font-black uppercase text-sm">CEO Attendance</p><p class="mono text-[9px] text-slate-500">+$30/HR</p></div>
+                            <div id="check-ceo" class="w-7 h-7 rounded-full border-2 border-white/20"></div>
                         </div>
-                        <div onclick="toggleAddon('raw')" id="addon-raw" class="p-6 border-2 border-white/5 rounded-3xl flex justify-between items-center cursor-pointer transition-all hover:bg-white/5">
-                            <div>
-                                <p class="font-black uppercase text-sm">RAW Asset Export</p>
-                                <p class="mono text-[9px] text-slate-500">+$15 Flat</p>
-                            </div>
-                            <div id="check-raw" class="w-6 h-6 rounded-full border-2 border-white/20"></div>
+                        <div onclick="toggleAddon('raw')" id="addon-raw" class="p-8 border-2 border-white/5 rounded-3xl flex justify-between items-center cursor-pointer hover:bg-white/5 transition-all">
+                            <div><p class="font-black uppercase text-sm">RAW Asset Export</p><p class="mono text-[9px] text-slate-500">+$15 FLAT</p></div>
+                            <div id="check-raw" class="w-7 h-7 rounded-full border-2 border-white/20"></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-2 space-y-8">
-                <div class="flex items-center gap-4">
-                    <h3 class="text-4xl font-black italic uppercase tracking-tighter text-blue-600">Fiscal Hub</h3>
+            <div class="lg:col-span-2 space-y-12">
+                <div class="glass-panel p-10 rank-glow text-center">
+                    <div class="w-24 h-24 bg-blue-600 rounded-[35px] flex items-center justify-center text-5xl mx-auto mb-8 shadow-3xl">👤</div>
+                    <h4 class="text-3xl font-black uppercase tracking-tight">OPERATOR RANK</h4>
+                    <p class="mono text-[10px] font-black text-blue-400 uppercase tracking-[0.4em] mt-2">Bronze 1 Pilot</p>
+                    
+                    <div class="mt-12 space-y-6">
+                        <div class="flex justify-between mono text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                            <span>Mission Success Rate</span>
+                            <span>15%</span>
+                        </div>
+                        <div class="h-4 bg-white/5 rounded-full overflow-hidden p-1">
+                            <div class="h-full bg-blue-600 rounded-full w-[15%]"></div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="glass-panel p-10 border-blue-600/30 shadow-[0_0_80px_rgba(37,99,235,0.15)]">
-                    <div class="space-y-6 mb-10">
-                        <div class="flex justify-between items-end">
-                            <span class="mono text-[11px] text-slate-400 uppercase">Current Subtotal</span>
-                            <span id="display-total" class="text-6xl font-black tracking-tighter">$0.00</span>
-                        </div>
-                        <div class="progress-line" id="payment-progress"></div>
+                <div class="glass-panel p-10 border-blue-600/30">
+                    <div class="flex justify-between items-end mb-8">
+                        <span class="mono text-[11px] text-slate-400 uppercase tracking-widest">Total Invoice</span>
+                        <span id="invoice-total" class="text-6xl font-black tracking-tighter text-blue-600">$0.00</span>
                     </div>
-
-                    <div class="space-y-6">
-                        <input type="text" id="mpesa-num" placeholder="M-PESA: 254..." class="w-full bg-white/5 border border-white/10 p-6 rounded-3xl mono text-sm outline-none focus:border-blue-500 transition">
-                        <button onclick="processPayment()" id="pay-btn" class="w-full bg-blue-600 py-8 rounded-[30px] font-black uppercase tracking-[0.4em] text-xs hover:bg-blue-500 transition-all">
-                            Authorize Transaction
-                        </button>
-                    </div>
-
-                    <div id="status-box" class="mt-8 hidden">
-                        <p id="status-text" class="mono text-[10px] text-center text-blue-400 uppercase tracking-widest animate-pulse"></p>
-                    </div>
+                    <div class="progress-line mb-10" id="pay-progress"></div>
+                    
+                    <input type="text" id="mpesa-field" placeholder="M-PESA: 254..." class="w-full bg-white/5 border border-white/10 p-7 rounded-[30px] mono text-sm outline-none focus:border-blue-500 transition-all mb-6">
+                    <button onclick="execPayment()" id="pay-action" class="w-full bg-blue-600 py-8 rounded-[35px] font-black uppercase tracking-[0.5em] text-xs shadow-2xl hover:bg-blue-500 transition-all">Authorize Transaction</button>
+                    
+                    <p id="pay-status" class="mono text-[9px] text-center text-blue-400 mt-6 uppercase tracking-widest hidden animate-pulse"></p>
                 </div>
             </div>
         </section>
     </main>
 
-    <div id="mission-overlay" class="hidden fixed inset-0 z-[1000] flex items-center justify-center p-6 bg-black">
+    <div id="mission-overlay" class="hidden fixed inset-0 z-[1000] flex items-center justify-center p-6 bg-black/95">
         <div id="hud-content" class="w-full flex flex-col items-center">
             <div class="w-24 h-24 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
     </div>
 
     <script>
-        let addons = { ceo: false, raw: false };
-        let total = 0;
+        let state = { ceo: false, raw: false, total: 0 };
 
-        function toggleAddon(type) {
-            addons[type] = !addons[type];
-            document.getElementById(`addon-${type}`).style.borderColor = addons[type] ? '#2563eb' : 'rgba(255,255,255,0.05)';
-            document.getElementById(`check-${type}`).style.backgroundColor = addons[type] ? '#2563eb' : 'transparent';
-            calculateTotal();
+        function toggleAddon(id) {
+            state[id] = !state[id];
+            document.getElementById(`addon-${id}`).style.borderColor = state[id] ? '#2563eb' : 'rgba(255,255,255,0.05)';
+            document.getElementById(`check-${id}`).style.backgroundColor = state[id] ? '#2563eb' : 'transparent';
+            updateFiscal();
         }
 
-        function calculateTotal() {
-            const hours = parseFloat(document.getElementById('input-hours').value) || 0;
-            const rate = parseFloat(document.getElementById('input-type').value);
-            
-            let base = hours * rate;
-            if(addons.ceo) base += (hours * 30);
-            if(addons.raw) base += 15;
-
-            total = base;
-            document.getElementById('display-total').innerText = `$${total.toFixed(2)}`;
+        function updateFiscal() {
+            const h = parseFloat(document.getElementById('op-hours').value) || 0;
+            const r = parseFloat(document.getElementById('op-type').value);
+            let sum = h * r;
+            if(state.ceo) sum += (h * 30);
+            if(state.raw) sum += 15;
+            state.total = sum;
+            document.getElementById('invoice-total').innerText = `$${sum.toFixed(2)}`;
         }
 
-        function processPayment() {
-            const mpesa = document.getElementById('mpesa-num').value;
-            if(!mpesa) return alert("Enter M-Pesa Destination Number");
-
-            const btn = document.getElementById('pay-btn');
-            const statusBox = document.getElementById('status-box');
-            const statusText = document.getElementById('status-text');
-            const progress = document.getElementById('payment-progress');
-
-            btn.disabled = true;
-            btn.style.opacity = '0.5';
-            statusBox.classList.remove('hidden');
-            progress.classList.add('progress-active');
+        function execPayment() {
+            if(!document.getElementById('mpesa-field').value) return alert("M-Pesa Verification Required");
             
-            statusText.innerText = "Initializing STK Push...";
+            const btn = document.getElementById('pay-action');
+            const status = document.getElementById('pay-status');
+            const progress = document.getElementById('pay-progress');
             
-            setTimeout(() => { statusText.innerText = "Awaiting User Auth..."; }, 2000);
-            setTimeout(() => { statusText.innerText = "Transaction Verified."; }, 5000);
+            btn.disabled = true; btn.style.opacity = '0.5';
+            status.classList.remove('hidden'); progress.classList.add('progress-active');
+            
+            status.innerText = "Initializing STK Handshake...";
+            setTimeout(() => { status.innerText = "Awaiting User Authentication..."; }, 2000);
+            setTimeout(() => { status.innerText = "Verification Complete."; }, 5000);
             
             setTimeout(() => {
                 progress.classList.remove('progress-active');
-                statusText.innerText = "Payment Confirmed. Ready for Flight.";
-                btn.innerText = "LOCKED FOR SORTIE";
+                status.innerText = "Payment Secured. Initializing Sortie.";
                 triggerMission();
             }, 7000);
         }
@@ -202,27 +232,26 @@
             setTimeout(() => {
                 hud.innerHTML = `
                     <div class="flex flex-col items-center justify-center space-y-16">
-                        <div class="flex gap-16 items-center scale-125">
+                        <div class="flex gap-16 items-center scale-150">
                             <img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Bride/Flat/bride_flat.png" class="w-40 h-40">
                             <img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Man%20in%20tuxedo/Flat/man_in_tuxedo_flat.png" class="w-40 h-40">
                             <img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Birthday%20cake/Flat/birthday_cake_flat.png" class="w-40 h-40">
                         </div>
                         <div class="text-center pt-8">
-                            <p class="mono text-[18px] font-black tracking-[1.2em] text-white opacity-80 uppercase">STILL SAVED: IMAGE_882.RAW</p>
+                            <p class="mono text-[20px] font-black tracking-[1.4em] text-white opacity-80 uppercase">STILL SAVED: IMAGE_882.RAW</p>
                         </div>
                     </div>`;
                 
-                const flash = document.createElement('div');
-                flash.className = "fixed inset-0 bg-white z-[2000] opacity-100 transition-opacity duration-1000";
-                document.body.appendChild(flash);
-                setTimeout(() => flash.style.opacity = '0', 50);
+                const f = document.createElement('div');
+                f.className = "fixed inset-0 bg-white z-[2000] opacity-100 transition-opacity duration-1000";
+                document.body.appendChild(f);
+                setTimeout(() => f.style.opacity = '0', 50);
             }, 3000);
             
-            setTimeout(() => { overlay.classList.add('hidden'); location.reload(); }, 9000);
+            setTimeout(() => { overlay.classList.add('hidden'); location.reload(); }, 10000);
         }
 
-        // Initialize total on load
-        calculateTotal();
+        updateFiscal();
     </script>
 </body>
 </html>
